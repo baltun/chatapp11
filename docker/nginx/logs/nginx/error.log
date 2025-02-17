@@ -1,0 +1,76 @@
+2025/02/17 00:23:24 [notice] 1#1: using the "epoll" event method
+2025/02/17 00:23:24 [notice] 1#1: nginx/1.27.3
+2025/02/17 00:23:24 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2025/02/17 00:23:24 [notice] 1#1: OS: Linux 6.8.0-49-generic
+2025/02/17 00:23:24 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/17 00:23:24 [notice] 1#1: start worker processes
+2025/02/17 00:23:24 [notice] 1#1: start worker process 32
+2025/02/17 00:23:24 [notice] 1#1: start worker process 33
+2025/02/17 00:42:00 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/02/17 00:42:00 [notice] 32#32: gracefully shutting down
+2025/02/17 00:42:00 [notice] 33#33: gracefully shutting down
+2025/02/17 00:42:00 [notice] 32#32: exiting
+2025/02/17 00:42:00 [notice] 33#33: exiting
+2025/02/17 00:42:00 [notice] 32#32: exit
+2025/02/17 00:42:00 [notice] 33#33: exit
+2025/02/17 00:42:01 [notice] 1#1: signal 17 (SIGCHLD) received from 33
+2025/02/17 00:42:01 [notice] 1#1: worker process 33 exited with code 0
+2025/02/17 00:42:01 [notice] 1#1: signal 29 (SIGIO) received
+2025/02/17 00:42:01 [notice] 1#1: signal 17 (SIGCHLD) received from 32
+2025/02/17 00:42:01 [notice] 1#1: worker process 32 exited with code 0
+2025/02/17 00:42:01 [notice] 1#1: exit
+2025/02/17 00:42:01 [warn] 1#1: conflicting server name "" on 0.0.0.0:80, ignored
+2025/02/17 00:42:01 [notice] 1#1: using the "epoll" event method
+2025/02/17 00:42:01 [notice] 1#1: nginx/1.27.3
+2025/02/17 00:42:01 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2025/02/17 00:42:01 [notice] 1#1: OS: Linux 6.8.0-49-generic
+2025/02/17 00:42:01 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/17 00:42:01 [notice] 1#1: start worker processes
+2025/02/17 00:42:01 [notice] 1#1: start worker process 28
+2025/02/17 00:42:01 [notice] 1#1: start worker process 29
+2025/02/17 08:31:49 [info] 28#28: epoll_wait() failed (4: Interrupted system call)
+2025/02/17 08:31:49 [info] 29#29: epoll_wait() failed (4: Interrupted system call)
+2025/02/17 08:38:38 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/02/17 08:38:38 [notice] 28#28: gracefully shutting down
+2025/02/17 08:38:38 [notice] 29#29: gracefully shutting down
+2025/02/17 08:38:38 [notice] 28#28: exiting
+2025/02/17 08:38:38 [notice] 29#29: exiting
+2025/02/17 08:38:38 [notice] 29#29: exit
+2025/02/17 08:38:38 [notice] 28#28: exit
+2025/02/17 08:38:38 [notice] 1#1: signal 17 (SIGCHLD) received from 29
+2025/02/17 08:38:38 [notice] 1#1: worker process 29 exited with code 0
+2025/02/17 08:38:38 [notice] 1#1: signal 29 (SIGIO) received
+2025/02/17 08:38:38 [notice] 1#1: signal 17 (SIGCHLD) received from 28
+2025/02/17 08:38:38 [notice] 1#1: worker process 28 exited with code 0
+2025/02/17 08:38:38 [notice] 1#1: exit
+2025/02/17 08:38:39 [warn] 1#1: conflicting server name "" on 0.0.0.0:80, ignored
+2025/02/17 08:38:39 [notice] 1#1: using the "epoll" event method
+2025/02/17 08:38:39 [notice] 1#1: nginx/1.27.3
+2025/02/17 08:38:39 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2025/02/17 08:38:39 [notice] 1#1: OS: Linux 6.8.0-49-generic
+2025/02/17 08:38:39 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/17 08:38:39 [notice] 1#1: start worker processes
+2025/02/17 08:38:39 [notice] 1#1: start worker process 28
+2025/02/17 08:38:39 [notice] 1#1: start worker process 29
+2025/02/17 08:45:46 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/02/17 08:45:46 [notice] 28#28: gracefully shutting down
+2025/02/17 08:45:46 [notice] 29#29: gracefully shutting down
+2025/02/17 08:45:46 [notice] 28#28: exiting
+2025/02/17 08:45:46 [notice] 29#29: exiting
+2025/02/17 08:45:46 [notice] 28#28: exit
+2025/02/17 08:45:46 [notice] 29#29: exit
+2025/02/17 08:45:46 [notice] 1#1: signal 17 (SIGCHLD) received from 29
+2025/02/17 08:45:46 [notice] 1#1: worker process 29 exited with code 0
+2025/02/17 08:45:46 [notice] 1#1: signal 29 (SIGIO) received
+2025/02/17 08:45:46 [notice] 1#1: signal 17 (SIGCHLD) received from 28
+2025/02/17 08:45:46 [notice] 1#1: worker process 28 exited with code 0
+2025/02/17 08:45:46 [notice] 1#1: exit
+2025/02/17 08:45:47 [warn] 1#1: conflicting server name "" on 0.0.0.0:80, ignored
+2025/02/17 08:45:47 [notice] 1#1: using the "epoll" event method
+2025/02/17 08:45:47 [notice] 1#1: nginx/1.27.3
+2025/02/17 08:45:47 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2025/02/17 08:45:47 [notice] 1#1: OS: Linux 6.8.0-49-generic
+2025/02/17 08:45:47 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/02/17 08:45:47 [notice] 1#1: start worker processes
+2025/02/17 08:45:47 [notice] 1#1: start worker process 27
+2025/02/17 08:45:47 [notice] 1#1: start worker process 28
