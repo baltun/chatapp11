@@ -22,3 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 /docker/mysql/db_data
+/logs
+/docker/nginx/logs
