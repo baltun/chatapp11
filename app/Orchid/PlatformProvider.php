@@ -34,6 +34,10 @@ class PlatformProvider extends OrchidServiceProvider
     public function menu(): array
     {
         return [
+            Menu::make('Чаты')
+                ->icon('chat-left-heart')
+                ->route('platform.chats')
+                ->title('ChatApp'),
             Menu::make('Get Started')
                 ->icon('bs.book')
                 ->title('Navigation')
