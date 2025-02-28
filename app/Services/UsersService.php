@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\UsersDTO;
 use App\Models\User;
 use App\Repositories\UsersRepository;
 use App\Repositories\UsersRepositoryInterface;
@@ -18,9 +19,9 @@ class UsersService
         //
     }
 
-    public function get($perPage, $currentPage)
+    public function get(UsersDTO $usersDTO)
     {
-        $users = $this->usersRepository->get($perPage, $currentPage);
+        $users = $this->usersRepository->get($usersDTO);
 
         return $users;
     }

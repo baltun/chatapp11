@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\DTO\UsersDTO;
 use App\Models\User;
 
 class UsersRepository implements UsersRepositoryInterface
@@ -15,9 +16,9 @@ class UsersRepository implements UsersRepositoryInterface
     }
 
 
-    public function get($perPage, $currentPage)
+    public function get(UsersDTO $usersDTO)
     {
-        $users = User::get()->paginate();
+        $users = User::paginate($usersDTO->perPage);
 
         return $users;
     }

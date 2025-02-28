@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use App\DTO\UsersDTO;
+
 interface UsersRepositoryInterface
 {
-    public function get($perPage, $currentPage);
+    public function get(UsersDTO $usersDTO);
 }

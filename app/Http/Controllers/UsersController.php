@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\UsersDTO;
 use App\Services\UsersService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -15,14 +16,21 @@ class UsersController extends Controller
     {
 
     }
-    public function list($page = 0)
+    public function list(Request $request)
     {
-        $users = $this->usersService->get(20, $page);
+        $usersDto = new UsersDTO(
+            $request['per_page'] ?? 20,
+            $request['page'] ?? 1,
+        );
+//        $perPage = $request['per_page'] ?? 20;
+//        $page = $request['page'] ?? 1;
 
-//        return new ResourceCollection($users);
-        return response()
-            ->json(new ResourceCollection($users), Response::HTTP_OK)
-            ->header('ololo', '25')
-            ;
+        $users = $this->usersService->get($usersDto);
+
+        return new ResourceCollection($users);
+//        return response()
+//            ->json(new ResourceCollection($users), Response::HTTP_OK)
+//            ->header('ololo', '25')
+//            ;
     }
 }
