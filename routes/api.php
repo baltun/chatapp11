@@ -3,9 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
     // все роуты api версии v1
     Route::prefix('/v1')->group(function () {
 
@@ -15,6 +13,8 @@ Route::get('/user', function (Request $request) {
         });
 
         Route::get('/users', [App\Http\Controllers\UsersController::class, 'list']);
+        Route::post('/chats', [App\Http\Controllers\ChatsController::class, 'createOrGet']);
+        Route::get('/users/{userId}/chats', [App\Http\Controllers\ChatsController::class, 'list']);
         // Маршруты, требующие аутентификации
         Route::middleware('auth:sanctum')->group(function () {
 
