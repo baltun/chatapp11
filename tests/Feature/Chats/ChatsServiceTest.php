@@ -47,9 +47,9 @@ class ChatsServiceTest extends TestCase
     public static function chatCreateProvider()
     {
         return [
-//            [[1, 2], 1],
-//            [[1, 3], 2],
-//            [[2, 3], 2],
+            [[1, 2], 1],
+            [[1, 3], 2],
+            [[2, 3], 2],
             [[1, 2, 3], 2],
         ];
     }

@@ -45,7 +45,7 @@ class ChatsService
                     ->whereNotIn('user_id', $userIds);
             })
             ->first(['id', 'slug']);
-        dd($existingChat);
+
         return $existingChat;
     }
 
