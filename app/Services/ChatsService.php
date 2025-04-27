@@ -3,30 +3,78 @@
 namespace App\Services;
 
 use App\DTO\ChatDTO;
-use App\Repositories\ChatsRepository;
-use App\Repositories\ChatsRepositoryInterface;
-use http\Env\Request;
+use App\Models\Chat;
+use App\Models\ChatsUsers;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class ChatsService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct(protected ChatsRepositoryInterface $chatsRepository)
-    {
-
-    }
 
     public function createOrGet(ChatDTO $chatDto)
     {
-//        $chatId = $this->chatsRepository->createOrGet($chatDTO);
-
-        $existingChat = $this->chatsRepository->getByUsers([$chatDto->user1, $chatDto->user2]);
+        $chat = null;
+        $existingChat = $this->isChatExists($chatDto->userIds);
         if ($existingChat) {
-            return $existingChat->id;
+            $chat = $existingChat;
+        } else {
+            $createdChat = $this->create($chatDto->userIds);
+            $chat = $createdChat;
         }
-        $createdChat = $this->chatsRepository->create([$chatDto->user1, $chatDto->user2]);
 
-        return $createdChat->id;
+        return $chat->id;
+    }
+
+    public function isChatExists(
+        array $userIds
+    ): ?Chat
+    {
+        // находим чаты, в которых есть указанные пользователи
+        $existingChat = Chat::query()
+            ->whereIn('id', function ($query) use ($userIds) {
+                $query->select('chat_id')
+                    ->from('chats_users')
+                    ->whereIn('user_id', $userIds)
+                    ->groupBy('chat_id')
+                    ->havingRaw('COUNT(*) = 2');
+            })
+            // и в которых нет никаких других пользователей
+            ->whereNotIn('id', function ($query) use ($userIds) {
+                $query->select('chat_id')
+                    ->from('chats_users')
+                    ->whereNotIn('user_id', $userIds);
+            })
+            ->first(['id', 'slug']);
+        dd($existingChat);
+        return $existingChat;
+    }
+
+    public function create(array $userIds, $slug = null)
+    {
+        $chat = null;
+        DB::transaction(function () use ($userIds, $slug, &$chat) {
+
+            $chat = Chat::create();
+
+            foreach ($userIds as $userId) {
+                ChatsUsers::create([
+                    'chat_id' => $chat->id,
+                    'user_id' => $userId,
+                ]);
+            }
+        });
+
+        return $chat;
+    }
+
+    public function listForUser($user)
+    {
+        $chats = Chat::whereHas('chatUsers', function (Builder $query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->with('chatUsers')
+            ->get();
+
+        return $chats;
     }
 }

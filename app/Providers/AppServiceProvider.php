@@ -16,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UsersRepositoryInterface::class, UsersRepository::class);
-        $this->app->bind(ChatsRepositoryInterface::class, ChatsRepository::class);
 
         // Telescope
         if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {

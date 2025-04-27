@@ -2,10 +2,9 @@
 
 namespace App\DTO;
 
-class ChatDTO
+class ChatDTO extends Dto
 {
-    public $slug;
-    public $user1;
-    public $user2;
-    public $options;
+    public string $slug;
+    public array $userIds;
+    public array $options;
 }

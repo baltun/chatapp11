@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ChatsUsers extends Model
+class ChatsUsers extends Pivot
 {
     public $table = 'chats_users';
 
