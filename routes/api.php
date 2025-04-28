@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Route;
 
 //        Route::group(['prefix' => 'profiles', 'middleware' => 'auth:sanctum'], function () {
         Route::group(['prefix' => 'users'], function () {
-            Route::get('/', [App\Http\Controllers\UsersController::class, 'list']);
-            Route::post('/chats', [App\Http\Controllers\ChatsController::class, 'createOrGet']);
+            Route::get('/', [App\Http\Controllers\UsersController::class, 'list'])->name('users.list');
 //            Route::group(['prefix' => '{user}/chats', 'middleware' => ProfileBelongingToUserChecker::class], function () {
             Route::group(['prefix' => '{user}/chats'], function () {
-                Route::get('/', [App\Http\Controllers\ChatsController::class, 'listForUser']);
+                Route::get('/', [App\Http\Controllers\ChatsController::class, 'index'])->name('chats.index');
+                Route::post('/', [App\Http\Controllers\ChatsController::class, 'createOrGet'])->name('chats.create');
                 Route::group(['prefix' => '{chatId}/messages'], function () {
-                    Route::get('/', [App\Http\Controllers\MessagesController::class, 'list']);
-                    Route::post('/', [App\Http\Controllers\MessagesController::class, 'create']);
+                    Route::get('/', [App\Http\Controllers\MessagesController::class, 'list'])->name('messages.index');
+                    Route::post('/', [App\Http\Controllers\MessagesController::class, 'create'])->name('messages.create');
                 });
             });
         });

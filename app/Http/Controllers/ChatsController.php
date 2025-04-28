@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DTO\ChatDTO;
+use App\Models\User;
 use App\Services\ChatsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,10 +14,9 @@ class ChatsController extends Controller
     {
 
     }
-    public function index()
+    public function index(User $user)
     {
-        $chats = $this->chatsService->get();
-
+        $chats = $this->chatsService->listForUser($user);
         return $chats;
     }
 

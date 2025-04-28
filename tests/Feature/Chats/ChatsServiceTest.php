@@ -39,8 +39,11 @@ class ChatsServiceTest extends TestCase
 
     public function test_get_all_chats(): void
     {
+        $user = User::find(1);
+
         $chatsService = resolve(ChatsService::class);
-        $chats = $chatsService->listForUser(User::find(1));
+        $chats = $chatsService->listForUser($user);
+
         $this->assertInstanceOf(Chat::class, $chats[0]);
     }
 
@@ -65,6 +68,7 @@ class ChatsServiceTest extends TestCase
         ]);
 
         $chatId = $chatsService->createOrGet($chatCreateDto);
+
         $this->assertEquals($chatId, $expectedId);
     }
 

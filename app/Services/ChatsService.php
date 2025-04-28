@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\ChatDTO;
 use App\Models\Chat;
+use App\Models\ChatParticipant;
 use App\Models\ChatsUsers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -29,22 +30,23 @@ class ChatsService
         array $userIds
     ): ?Chat
     {
-        // находим чаты, в которых есть указанные пользователи
-        $existingChat = Chat::query()
-            ->whereIn('id', function ($query) use ($userIds) {
-                $query->select('chat_id')
-                    ->from('chats_users')
-                    ->whereIn('user_id', $userIds)
-                    ->groupBy('chat_id')
-                    ->havingRaw('COUNT(*) = 2');
-            })
-            // и в которых нет никаких других пользователей
-            ->whereNotIn('id', function ($query) use ($userIds) {
-                $query->select('chat_id')
-                    ->from('chats_users')
-                    ->whereNotIn('user_id', $userIds);
-            })
-            ->first(['id', 'slug']);
+        $existingChat = null;
+        if (count($userIds) == 2) {
+            $chatIds = ChatsUsers::query()
+                ->select('chat_id')
+                ->whereIn('user_id', $userIds)
+                ->groupBy('chat_id')
+                ->havingRaw('COUNT(DISTINCT user_id) = ?', [count($userIds)])
+                ->get()
+                ->pluck('chat_id')
+                ->toArray();
+            $existingChat = Chat::query()
+                ->whereIn('id', $chatIds)
+                ->whereDoesntHave('users', function ($query) use ($userIds) {
+                    $query->whereNotIn('user_id', $userIds);
+                })
+                ->first();
+        }
 
         return $existingChat;
     }
