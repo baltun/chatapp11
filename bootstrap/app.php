@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppLogicException;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,7 +17,23 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (AppLogicException $e, $request) {
+            if ($request->wantsJson()) {
+                $responseData = response()->json([
+                    'errors' => [
+                        [
+                            'status' => (string) $e->getCode(),
+                            'code' => $e->getCode(),
+                            'title' => $e->getMessage(),
+                        ],
+                    ],
+                ], $e->getCode());
+            } else {
+                $responseData = null;
+            }
+
+            return $responseData;
+        });
     })->withSchedule(function (Schedule $schedule) {
         $schedule->call('telescope:prune')->daily();
     })->create();
