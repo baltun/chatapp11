@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Chats;
 
-use App\DTO\ChatDTO;
+use App\Services\Chats\DTO\ChatCreateDTO;
 use App\Models\Chat;
 use App\Models\User;
-use App\Services\ChatsService;
+use App\Services\Chats\ChatsService;
 use Database\Seeders\ChatsSeeder;
 use Database\Seeders\UsersSeeder;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -19,14 +19,24 @@ class ChatsServiceTest extends TestCase
     use RefreshDatabase;
 
     /* todo:
-     *  - редактирование чата
      *  + - изменить логику - много участников
-     *  - убрать репозиторий
-     *  - добавить API Resources
+     *  + - убрать репозиторий
      *  - написать тесты на API-эндпоинты - статус, структура ответа
+     *      + - список
+     *      + - добавление
+     *      - удаление
+     *  + - проверка на уже существующий чат
+     *  - тесты сервисов
+     *      + - создание
+     *      + - список
+     *      + - удаление
+     *      - редактирование чата
+     *  + - добавить API Resources
      *  - обработка исключений
-     *  - проверка на уже существующий чат
+     *  - scribe атрибуты на каждый метод контроллеров
     */
+
+
     public function SetUp(): void
     {
         parent::setUp();
@@ -44,7 +54,12 @@ class ChatsServiceTest extends TestCase
         $chatsService = resolve(ChatsService::class);
         $chats = $chatsService->listForUser($user);
 
-        $this->assertInstanceOf(Chat::class, $chats[0]);
+        $this->assertContainsOnlyInstancesOf(Chat::class, $chats);
+        foreach ($chats as $chat) {
+            foreach ($chat->users as $user) {
+
+            }
+        }
     }
 
     public static function chatCreateProvider()
@@ -61,21 +76,29 @@ class ChatsServiceTest extends TestCase
     public function test_create_chat(array $userIds, int $expectedId): void
     {
         $chatsService = resolve(ChatsService::class);
-        $chatCreateDto = new ChatDTO([
+        $chatCreateDto = new ChatCreateDTO([
             'slug' => 'chat2',
             'userIds' => $userIds,
             'options' => [],
         ]);
 
-        $chatId = $chatsService->createOrGet($chatCreateDto);
+        $chat = $chatsService->createOrGet($chatCreateDto);
 
-        $this->assertEquals($chatId, $expectedId);
+        $this->assertEquals($chat->id, $expectedId);
     }
 
+    /*
+     * тест на удаление чата
+     */
     public function test_delete_chat(): void
     {
-        $response = $this->get('/');
+        $user = User::find(1);
 
-        $response->assertStatus(200);
+        $chatsService = resolve(ChatsService::class);
+//        $chat = Chat::find(1);
+        $chatId = 1;
+        $this->assertCount(1, $user->fresh()->chats);
+        $chatsService->delete($chatId);
+        $this->assertCount(0, $user->fresh()->chats);
     }
 }

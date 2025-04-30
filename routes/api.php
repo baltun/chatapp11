@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
             Route::group(['prefix' => '{user}/chats'], function () {
                 Route::get('/', [App\Http\Controllers\ChatsController::class, 'index'])->name('chats.index');
                 Route::post('/', [App\Http\Controllers\ChatsController::class, 'createOrGet'])->name('chats.create');
+                Route::delete('/{chat}', [App\Http\Controllers\ChatsController::class, 'destroy'])->name('chats.delete');
                 Route::group(['prefix' => '{chatId}/messages'], function () {
                     Route::get('/', [App\Http\Controllers\MessagesController::class, 'list'])->name('messages.index');
                     Route::post('/', [App\Http\Controllers\MessagesController::class, 'create'])->name('messages.create');

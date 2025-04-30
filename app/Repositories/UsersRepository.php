@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\DTO\UsersDTO;
+use App\Services\Users\DTO\UsersDTO;
 use App\Models\User;
 
 class UsersRepository implements UsersRepositoryInterface

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\ChatDTO;
+use App\Http\Requests\ChatCreateRequest;
+use App\Models\Chat;
+use App\Services\Chats\DTO\ChatCreateDTO;
 use App\Models\User;
-use App\Services\ChatsService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Services\Chats\ChatsService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Symfony\Component\HttpFoundation\Response as StatusCode;
 
 class ChatsController extends Controller
 {
@@ -14,21 +17,25 @@ class ChatsController extends Controller
     {
 
     }
-    public function index(User $user)
+    public function index(User $user): JsonResponse
     {
         $chats = $this->chatsService->listForUser($user);
-        return $chats;
+
+        return (new JsonResource($chats))->response();
     }
 
-    public function createOrGet(Request $request, ChatDTO $chatDTO)
+    public function createOrGet(ChatCreateRequest $request): JsonResponse
     {
-        $chatDTO->slug = $request['slug'];
-        $chatDTO->user1 = Auth::id() ?? 1;
-        $chatDTO->user2 = $request['user2'];
-        $chatDTO->options = $request['options'];
+        $chatCreateDTO = new ChatCreateDTO($request->validated());
+        $chat = $this->chatsService->createOrGet($chatCreateDTO);
 
-        $chatId = $this->chatsService->createOrGet($chatDTO);
+        return (new JsonResource($chat))->response();
+    }
 
-        return $chatId;
+    public function destroy($chat): JsonResponse
+    {
+        $this->chatsService->delete($chat);
+
+        return response()->json(['message' => 'Chat deleted successfully'], StatusCode::HTTP_NO_CONTENT);
     }
 }

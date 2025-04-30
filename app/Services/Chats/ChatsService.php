@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Chats;
 
-use App\DTO\ChatDTO;
+use App\Exceptions\AppLogicException;
+use App\Services\Chats\DTO\ChatCreateDTO;
 use App\Models\Chat;
-use App\Models\ChatParticipant;
 use App\Models\ChatsUsers;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class ChatsService
 {
 
-    public function createOrGet(ChatDTO $chatDto)
+    public function createOrGet(ChatCreateDTO $chatDto)
     {
         $chat = null;
         $existingChat = $this->isChatExists($chatDto->userIds);
@@ -23,7 +25,7 @@ class ChatsService
             $chat = $createdChat;
         }
 
-        return $chat->id;
+        return $chat;
     }
 
     public function isChatExists(
@@ -69,7 +71,7 @@ class ChatsService
         return $chat;
     }
 
-    public function listForUser($user)
+    public function listForUser(User $user)
     {
         $chats = Chat::whereHas('chatUsers', function (Builder $query) use ($user) {
             $query->where('user_id', $user->id);
@@ -78,5 +80,20 @@ class ChatsService
             ->get();
 
         return $chats;
+    }
+
+    /*
+     * удаление чата
+     */
+    public function delete(int $chatId): void
+    {
+        $chat = Chat::find($chatId);
+        if (!$chat) {
+            throw new AppLogicException('There is no chat with this id', Response::HTTP_NOT_FOUND);
+        }
+        DB::transaction(function () use ($chat) {
+            ChatsUsers::where('chat_id', $chat->id)->delete();
+            $chat->delete();
+        });
     }
 }

@@ -24,19 +24,57 @@ class ChatsApiTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_get_chats(): void
+    public function testGetChatByUser(): void
     {
         $response = $this->getJson(route('chats.index', ['user' => 1]));
 
         $response->assertStatus(200);
-//        dd($response->content());
         $response->assertJsonStructure([
-            '*' => [
-                'id',
-                'slug',
-                'chat_users'
+            'data' => [
+                '*' => [
+                    'id',
+                    'slug',
+                    'options',
+                    'chat_users',
+                ]
             ]
         ]);
         $response->assertJsonCount(1);
     }
+
+    public function testCreateChatSuccess()
+    {
+        $userId = 1;
+        $requestBody = [
+            'slug' => 'test_chat',
+            'userIds' => [1, 3],
+            'options' => [],
+        ];
+        $response = $this->postJson(route('chats.create', ['user' => $userId]), $requestBody);
+
+        $response->assertCreated();
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+            ]
+        ]);
+    }
+
+    public function testDeleteChatSuccess()
+    {
+        $userId = 2;
+        $response = $this->postJson(route('chats.create', ['user' => $userId]), [
+            'slug' => 'test_chat',
+            'userIds' => [$userId, 3],
+            'options' => [],
+        ]);
+        $chatId = $response->json('data.id');
+
+        $this->deleteJson(route('chats.delete', ['user' => $userId, 'chat' => $chatId]))
+            ->assertNoContent();
+        $this->assertDatabaseMissing('chats', ['id' => $chatId]);
+    }
+
+
+
 }

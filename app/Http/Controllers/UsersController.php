@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\UsersDTO;
-use App\Services\UsersService;
+use App\Services\Users\DTO\UsersDTO;
+use App\Services\Users\UsersService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

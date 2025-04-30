@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Users;
 
-use App\DTO\UsersDTO;
+use App\Services\Users\DTO\UsersDTO;
 use App\Models\User;
 use App\Repositories\UsersRepository;
 use App\Repositories\UsersRepositoryInterface;

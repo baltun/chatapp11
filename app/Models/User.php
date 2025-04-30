@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -68,4 +69,17 @@ class User extends Authenticatable
         'updated_at',
         'created_at',
     ];
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+
+    /*
+    * todo: связь с чатами
+    */
+    public function chats(): BelongsToMany
+    {
+        return $this->belongsToMany(Chat::class, 'chats_users', 'user_id', 'chat_id');
+    }
 }
