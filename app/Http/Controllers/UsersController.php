@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Users\DTO\UsersDTO;
+use App\Services\Users\DTO\UsersCreateDTO;
 use App\Services\Users\UsersService;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Http\Response;
+use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\Group;
 
 class UsersController extends Controller
 {
@@ -16,9 +16,13 @@ class UsersController extends Controller
     {
 
     }
+
+    #[Authenticated]
+    #[Group('Users')]
+//    #[ResponseFromApiResource(JsonResponse::class, Chat::class, status: StatusCode::HTTP_OK)]
     public function list(Request $request)
     {
-        $usersDto = new UsersDTO(
+        $usersDto = new UsersCreateDTO(
             $request['per_page'] ?? 20,
             $request['page'] ?? 1,
         );

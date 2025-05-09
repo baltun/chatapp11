@@ -50,7 +50,7 @@ class ChatsApiTest extends TestCase
             'userIds' => [1, 3],
             'options' => [],
         ];
-        $response = $this->postJson(route('chats.create', ['user' => $userId]), $requestBody);
+        $response = $this->postJson(route('chats.store', ['user' => $userId]), $requestBody);
 
         $response->assertCreated();
         $response->assertJsonStructure([
@@ -63,7 +63,7 @@ class ChatsApiTest extends TestCase
     public function testDeleteChatSuccess()
     {
         $userId = 2;
-        $response = $this->postJson(route('chats.create', ['user' => $userId]), [
+        $response = $this->postJson(route('chats.store', ['user' => $userId]), [
             'slug' => 'test_chat',
             'userIds' => [$userId, 3],
             'options' => [],

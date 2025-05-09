@@ -16,9 +16,17 @@ class ChatsSeeder extends Seeder
     {
         $chat1 = Chat::create([
             'slug' => 'chat1',
-        ])->users()->attach([
+        ]);
+        $chat1->participants()->attach([
             User::find(1),
             User::find(2),
+        ]);
+        $chat2 = Chat::create([
+            'slug' => 'chat1',
+        ]);
+        $chat2->participants()->attach([
+            User::find(3),
+            User::find(4),
         ]);
     }
 }

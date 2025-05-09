@@ -24,3 +24,7 @@ yarn-error.log
 /docker/mysql/db_data
 /logs
 /docker/nginx/logs
+resources/views/scribe/
+.scribe/
+docker/mysql/db_data/
+docker/nginx/logs/

@@ -2,7 +2,7 @@
 
 namespace App\Services\Users\DTO;
 
-class UsersDTO
+class UsersCreateDTO
 {
     public function __construct(
         public $perPage,

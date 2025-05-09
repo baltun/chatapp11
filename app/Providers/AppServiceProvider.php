@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Repositories\MessagesRepository;
-use App\Repositories\MessagesRepositoryInterface;
 use App\Repositories\UsersRepository;
 use App\Repositories\UsersRepositoryInterface;
 use Illuminate\Support\ServiceProvider;

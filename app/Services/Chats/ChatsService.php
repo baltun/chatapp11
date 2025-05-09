@@ -14,18 +14,29 @@ use Symfony\Component\HttpFoundation\Response;
 class ChatsService
 {
 
-    public function createOrGet(ChatCreateDTO $chatDto)
+    public function createOrGet(ChatCreateDTO $chatCreateDTO)
     {
-        $chat = null;
-        $existingChat = $this->isChatExists($chatDto->userIds);
-        if ($existingChat) {
-            $chat = $existingChat;
-        } else {
-            $createdChat = $this->create($chatDto->userIds);
-            $chat = $createdChat;
+        $userIds = $chatCreateDTO->userIds;
+        $slug = $chatCreateDTO->slug;
+
+        if (count($userIds) < 2) {
+            throw new AppLogicException('Chat must have at least 2 users', Response::HTTP_BAD_REQUEST);
         }
 
-        return $chat;
+        if (empty($slug)) {
+            throw new AppLogicException('Slug is required', Response::HTTP_BAD_REQUEST);
+        }
+
+        $existingChat = $this->isChatExists($chatCreateDTO->userIds);
+        if ($existingChat) {
+            return $existingChat;
+        }
+
+        $createdChat = $this->create($chatCreateDTO);
+        if (!$createdChat) {
+            throw new AppLogicException('Failed to create chat', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return $createdChat;
     }
 
     public function isChatExists(
@@ -44,7 +55,7 @@ class ChatsService
                 ->toArray();
             $existingChat = Chat::query()
                 ->whereIn('id', $chatIds)
-                ->whereDoesntHave('users', function ($query) use ($userIds) {
+                ->whereDoesntHave('participants', function ($query) use ($userIds) {
                     $query->whereNotIn('user_id', $userIds);
                 })
                 ->first();
@@ -53,19 +64,17 @@ class ChatsService
         return $existingChat;
     }
 
-    public function create(array $userIds, $slug = null)
+    public function create(ChatCreateDTO $chatCreateDTO): Chat
     {
         $chat = null;
-        DB::transaction(function () use ($userIds, $slug, &$chat) {
-
-            $chat = Chat::create();
-
-            foreach ($userIds as $userId) {
-                ChatsUsers::create([
-                    'chat_id' => $chat->id,
-                    'user_id' => $userId,
-                ]);
+        DB::transaction(function () use ($chatCreateDTO, &$chat) {
+            $chat = Chat::create([
+                'slug' => $chatCreateDTO->slug,
+            ]);
+            if (!$chat) {
+                throw new AppLogicException('Failed to create chat', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
+            $chat->participants()->attach($chatCreateDTO->userIds);
         });
 
         return $chat;
