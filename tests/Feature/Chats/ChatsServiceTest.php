@@ -26,9 +26,24 @@ class ChatsServiceTest extends TestCase
         ]);
     }
 
-    public function test_get_all_chats(): void
+    public function test_get_all_chats_success(): void
     {
         $user = User::find(1);
+
+        $chatsService = resolve(ChatsService::class);
+        $chats = $chatsService->listForUser($user);
+
+        $this->assertContainsOnlyInstancesOf(Chat::class, $chats);
+        foreach ($chats as $chat) {
+            foreach ($chat->participants as $user) {
+                $this->assertInstanceOf(User::class, $user);
+            }
+        }
+    }
+
+    public function test_get_all_chats_fail_not_participant(): void
+    {
+        $user = User::find(2);
 
         $chatsService = resolve(ChatsService::class);
         $chats = $chatsService->listForUser($user);

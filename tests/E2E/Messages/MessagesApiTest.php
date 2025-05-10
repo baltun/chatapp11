@@ -8,6 +8,7 @@ use Database\Seeders\MessagesSeeder;
 use Database\Seeders\UsersSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -24,6 +25,10 @@ class MessagesApiTest extends TestCase
             ChatsSeeder::class,
             MessagesSeeder::class,
         ]);
+
+        $this->actingAs(
+            auth()->loginUsingId(1)
+        );
     }
 
     public function test_create_message_success(): void
@@ -36,7 +41,7 @@ class MessagesApiTest extends TestCase
         $response = $this->postJson(
                                     route('messages.store', [
                                         'user' => $author->id,
-                                        'chatId' => $chat->id,
+                                        'chat' => $chat->id,
                                     ]),
                                     $requestBody
         );
@@ -58,5 +63,23 @@ class MessagesApiTest extends TestCase
                 'author_id' => $author->id,
             ],
         ]);
+    }
+
+    public function test_create_message_unauthorized(): void
+    {
+        Auth::logout();
+        $chat = Chat::find(1);
+        $requestBody = [
+            'text' => 'Test message',
+        ];
+        $response = $this->postJson(
+                                    route('messages.store', [
+                                        'user' => 1,
+                                        'chat' => $chat->id,
+                                    ]),
+                                    $requestBody
+        );
+
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 }

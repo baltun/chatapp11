@@ -11,18 +11,21 @@ use Illuminate\Support\Facades\Route;
         Route::get('/ping', function () {
             return response()->json(['message' => 'pong']);
         });
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register'])->name('auth.register');
+            Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('auth.login');
+            Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('auth.logout');
+        });
 
-//        Route::group(['prefix' => 'profiles', 'middleware' => 'auth:sanctum'], function () {
-        Route::group(['prefix' => 'users'], function () {
+        Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
             Route::get('/', [App\Http\Controllers\UsersController::class, 'list'])->name('users.list');
-//            Route::group(['prefix' => '{user}/chats', 'middleware' => ProfileBelongingToUserChecker::class], function () {
-            Route::group(['prefix' => '{user}/chats'], function () {
+            Route::group(['prefix' => '{user}/chats', 'middleware' => ['permissions']], function () {
                 Route::get('/', [App\Http\Controllers\ChatsController::class, 'index'])->name('chats.index');
                 Route::post('/', [App\Http\Controllers\ChatsController::class, 'createOrGet'])->name('chats.store');
                 Route::delete('/{chat}', [App\Http\Controllers\ChatsController::class, 'destroy'])->name('chats.delete');
-                Route::group(['prefix' => '{chatId}/messages'], function () {
+                Route::group(['prefix' => '{chat}/messages'], function () {
                     Route::get('/', [App\Http\Controllers\MessagesController::class, 'list'])->name('messages.index');
-                    Route::post('/', [App\Http\Controllers\MessagesController::class, 'create'])->name('messages.store');
+                    Route::post('/', [App\Http\Controllers\MessagesController::class, 'store'])->name('messages.store');
                 });
             });
         });

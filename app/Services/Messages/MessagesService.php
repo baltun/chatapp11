@@ -8,10 +8,9 @@ use App\Services\Messages\DTO\MessageCreateDto;
 
 class MessagesService
 {
-    public function create(MessageCreateDto $messageCreateDto, $userId, $chatId)
+    public function store(MessageCreateDto $messageCreateDto, $userId, $chatId)
     {
         $chat = Chat::find($chatId);
-
         if (!$chat) {
             throw new AppLogicException('Chat not found');
         }
@@ -30,7 +29,17 @@ class MessagesService
 
     public function list($userId, $chatId)
     {
-        $messages = Chat::find($chatId)->messages()->get();
+        $chat = Chat::find($chatId);
+
+        if (!$chat) {
+            throw new AppLogicException('Chat not found');
+        }
+
+        if (!$chat->participants()->where('user_id', $userId)->exists()) {
+            throw new AppLogicException('User is not a participant of the chat');
+        }
+
+        $messages = $chat->messages()->get();
 
         return $messages;
     }

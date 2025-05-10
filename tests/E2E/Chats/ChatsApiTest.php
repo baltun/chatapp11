@@ -1,7 +1,8 @@
 <?php
 
-namespace E2E\Chats;
+namespace Tests\E2E\Chats;
 
+use App\Models\User;
 use Database\Seeders\ChatsSeeder;
 use Database\Seeders\UsersSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,15 +20,16 @@ class ChatsApiTest extends TestCase
             UsersSeeder::class,
             ChatsSeeder::class,
         ]);
+
+        $this->actingAs(User::find(1));
     }
 
     /**
      * A basic feature test example.
      */
-    public function testGetChatByUser(): void
+    public function testListChatsOfUser(): void
     {
         $response = $this->getJson(route('chats.index', ['user' => 1]));
-
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
@@ -62,7 +64,7 @@ class ChatsApiTest extends TestCase
 
     public function testDeleteChatSuccess()
     {
-        $userId = 2;
+        $userId = 1;
         $response = $this->postJson(route('chats.store', ['user' => $userId]), [
             'slug' => 'test_chat',
             'userIds' => [$userId, 3],

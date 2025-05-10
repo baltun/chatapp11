@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
+use App\Models\User;
 use App\Services\Messages\DTO\MessageCreateDto;
 use App\Http\Requests\MessageCreateRequest;
 use App\Services\Messages\MessagesService;
@@ -29,10 +31,10 @@ class MessagesController extends Controller
     #[BodyParam('text', type: 'string', description: "Must be a message text")]
 
 //    #[ResponseFromApiResource(JsonResponse::class, Message::class, status: StatusCode::HTTP_NO_CONTENT)]
-    public function create(MessageCreateRequest $request, $user, $chatId): JsonResponse
+    public function store(MessageCreateRequest $request, $user, $chat): JsonResponse
     {
         $messageCreateDto = new MessageCreateDto($request->validated());
-        $message = $this->messagesService->create($messageCreateDto, $user, $chatId);
+        $message = $this->messagesService->store($messageCreateDto, $user, $chat);
 
         return (new JsonResource($message))->response()
             ->setStatusCode(StatusCode::HTTP_CREATED);
@@ -43,9 +45,9 @@ class MessagesController extends Controller
     #[UrlParam('user', type: 'string', description: "Must be a user ID")]
     #[UrlParam('chat', type: 'int', description: "Must be a chat ID")]
 //    #[ResponseFromApiResource(JsonResponse::class, Message::class, status: StatusCode::HTTP_NO_CONTENT)]
-    public function list($user, $chat)
+    public function list(User $user, Chat $chat)
     {
-        $messages = $this->messagesService->list($user, $chat);
+        $messages = $this->messagesService->list($user->id, $chat->id);
 
         return (new ResourceCollection($messages))->response()
             ->setStatusCode(StatusCode::HTTP_OK);

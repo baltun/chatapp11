@@ -16,25 +16,29 @@ class UsersSeeder extends Seeder
     {
         $faker = Factory::create('ru_RU');
         $user1 = User::factory()->create([
-            'name' => 'admin',
+            'first_name' => 'admin',
+            'last_name' => 'admin',
             'email' => 'admin@example',
             'password' => bcrypt('password'),
         ]);
 
         $user2 = User::factory()->create([
-            'name' => $faker->name(),
+            'first_name' => $faker->firstName(),
+            'last_name' => $faker->lastName(),
             'email' => $faker->email(),
             'password' => bcrypt('password'),
         ]);
 
         $user3 = User::factory()->create([
-            'name' => $faker->name(),
+            'first_name' => $faker->firstName(),
+            'last_name' => $faker->lastName(),
             'email' => $faker->email(),
             'password' => bcrypt('password'),
         ]);
 
         $user4 = User::factory()->create([
-            'name' => $faker->name(),
+            'first_name' => $faker->firstName(),
+            'last_name' => $faker->lastName(),
             'email' => $faker->email(),
             'password' => bcrypt('password'),
         ]);

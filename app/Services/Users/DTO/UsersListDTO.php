@@ -2,13 +2,13 @@
 
 namespace App\Services\Users\DTO;
 
-class UsersCreateDTO
+class UsersListDTO
 {
     public function __construct(
         public $perPage,
-        public $currentPage
+        public $currentPage,
+        public $searchText = '',
     )
     {
-
     }
 }

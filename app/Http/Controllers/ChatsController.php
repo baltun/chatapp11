@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\v1\Chat\ChatResource;
+use App\Models\Chat;
 use App\Services\Chats\DTO\ChatCreateDTO;
 use App\Models\User;
 use App\Services\Chats\ChatsService;
@@ -44,7 +45,7 @@ class ChatsController extends Controller
     #[Response(['message' => 'Chat must have at least 2 users'], StatusCode::HTTP_BAD_REQUEST, description: 'Business Logic errors')]
     #[Response(['message' => 'Slug is required'], StatusCode::HTTP_BAD_REQUEST, description: 'Business Logic errors')]
     #[Response(['message' => 'Failed to create chat'], StatusCode::HTTP_INTERNAL_SERVER_ERROR, description: 'Business Logic errors')]
-    public function createOrGet(ChatCreateRequest $request): JsonResponse
+    public function createOrGet(ChatCreateRequest $request, User $user): JsonResponse
     {
         $chatCreateDTO = new ChatCreateDTO($request->validated());
         $chat = $this->chatsService->createOrGet($chatCreateDTO);
@@ -58,9 +59,9 @@ class ChatsController extends Controller
     #[UrlParam('chat', type: 'int', description: "Must be a chat ID")]
 //    #[ResponseFromApiResource(JsonResponse::class, Chat::class, status: StatusCode::HTTP_NO_CONTENT)]
     #[Response(['message' => 'There is no chat with this id'], StatusCode::HTTP_NOT_FOUND, description: 'Business Logic errors')]
-    public function destroy($user, $chat): JsonResponse
+    public function destroy(User $user, Chat $chat): JsonResponse
     {
-        $this->chatsService->delete($chat);
+        $this->chatsService->delete($chat->id);
 
         return response()->json(['message' => 'Chat deleted successfully'], StatusCode::HTTP_NO_CONTENT);
     }

@@ -1,10 +1,12 @@
 <?php
 
 use App\Exceptions\AppLogicException;
+use App\Http\Middleware\PermissionsMiddleware;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,20 +16,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'permissions' => PermissionsMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AppLogicException $e, $request) {
+            $statusCode = ($e->getCode() != 0) ? $e->getCode() : Response::HTTP_BAD_REQUEST;
+            $message = $e->getMessage();
             if ($request->wantsJson()) {
                 $responseData = response()->json([
                     'errors' => [
                         [
-                            'status' => (string) $e->getCode(),
-                            'code' => $e->getCode(),
-                            'title' => $e->getMessage(),
+                            'status' => $statusCode,
+                            'code' => $statusCode,
+                            'title' => $message,
                         ],
                     ],
-                ], $e->getCode());
+                ], $statusCode);
             } else {
                 $responseData = null;
             }

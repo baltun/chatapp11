@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Services\Users\DTO\UsersCreateDTO;
+use App\Services\Users\DTO\UsersListDTO;
 
 interface UsersRepositoryInterface
 {
-    public function get(UsersCreateDTO $usersDTO);
+    public function get(UsersListDTO $usersDTO);
 }

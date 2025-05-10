@@ -23,6 +23,8 @@ class MessagesServiceTest extends TestCase
 
     public function setUp(): void
     {
+        $this->startMessageTest = microtime(true);
+
         parent::setUp();
         $this->seed([
             UsersSeeder::class,
@@ -32,27 +34,26 @@ class MessagesServiceTest extends TestCase
 
         $this->actingAs(User::find(1));
 
-        $this->startMessageTest = microtime(true);
     }
 
     public function test_message_create(): void
     {
         $chat = Chat::find(1);
         $user =$chat->participants()->first();
-        $messagesService = $this->app->make(MessagesService::class);
 
         $dto = new MessageCreateDto([
             'text' => self::TEST_MESSAGE_TEXT_1,
         ]);
 
-        $message = $messagesService->create($dto, $user->id, $chat->id);
+        $messagesService = $this->app->make(MessagesService::class);
+        $message = $messagesService->store($dto, $user->id, $chat->id);
 
         $this->assertNotEmpty($message);
         $this->assertInstanceOf(Message::class, $message);
         $this->assertEquals($message->text, self::TEST_MESSAGE_TEXT_1);
     }
 
-    public function test_messages_list()
+    public function test_messages_list_success()
     {
         $messagesService = $this->app->make(MessagesService::class);
 
@@ -65,6 +66,18 @@ class MessagesServiceTest extends TestCase
         $this->assertEquals($messages[0]->text, MessagesSeeder::MESSAGE_TEXT_1);
         $this->assertEquals($messages[0]->author_id, 1);
         $this->assertEquals($messages[0]->chat_id, 1);
+    }
+
+    public function test_messages_list_fail_not_participant()
+    {
+        $messagesService = $this->app->make(MessagesService::class);
+
+        $chat = Chat::find(2);
+        $currentUser = auth()->user();
+
+        $this->expectException(\App\Exceptions\AppLogicException::class);
+        $this->expectExceptionMessage('User is not a participant of the chat');
+        $messagesService->list($currentUser->id, $chat->id);
     }
 
     public function tearDown(): void

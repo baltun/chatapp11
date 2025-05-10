@@ -2,7 +2,7 @@
 
 namespace App\Services\Users;
 
-use App\Services\Users\DTO\UsersCreateDTO;
+use App\Services\Users\DTO\UsersListDTO;
 use App\Repositories\UsersRepositoryInterface;
 
 class UsersService
@@ -17,7 +17,7 @@ class UsersService
         //
     }
 
-    public function get(UsersCreateDTO $usersDTO)
+    public function get(UsersListDTO $usersDTO)
     {
         $users = $this->usersRepository->get($usersDTO);
 
