@@ -8,6 +8,7 @@ use App\Models\Chat;
 use App\Models\ChatsUsers;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,14 +20,25 @@ class ChatsService
         $userIds = $chatCreateDTO->userIds;
         $slug = $chatCreateDTO->slug;
 
-        if (count($userIds) < 2) {
-            throw new AppLogicException('Chat must have at least 2 users', Response::HTTP_BAD_REQUEST);
+        if (count($userIds) == 0) {
+            throw new AppLogicException('Chat must have at least 2 participants', Response::HTTP_BAD_REQUEST);
         }
 
         if (empty($slug)) {
             throw new AppLogicException('Slug is required', Response::HTTP_BAD_REQUEST);
         }
 
+        if (count($userIds) == 1) {
+            if ($userIds[0] == Auth::user()->id) {
+                throw new AppLogicException("You can not create a chat without participants", Response::HTTP_BAD_REQUEST);
+            }
+            $chatCreateDTO->userIds[] = Auth::user()->id;
+        }
+
+        if (!Auth::user() || !in_array(Auth::user()->id, $chatCreateDTO->userIds)) {
+            throw new AppLogicException("You can not create a chat where you not a participant", Response::HTTP_BAD_REQUEST);
+        }
+//dd($chatCreateDTO->userIds);
         $existingChat = $this->isChatExists($chatCreateDTO->userIds);
         if ($existingChat) {
             return $existingChat;

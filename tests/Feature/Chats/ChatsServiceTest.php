@@ -24,6 +24,8 @@ class ChatsServiceTest extends TestCase
             UsersSeeder::class,
             ChatsSeeder::class,
         ]);
+
+        $this->actingAs(User::find(1));
     }
 
     public function test_get_all_chats_success(): void
@@ -41,33 +43,18 @@ class ChatsServiceTest extends TestCase
         }
     }
 
-    public function test_get_all_chats_fail_not_participant(): void
-    {
-        $user = User::find(2);
-
-        $chatsService = resolve(ChatsService::class);
-        $chats = $chatsService->listForUser($user);
-
-        $this->assertContainsOnlyInstancesOf(Chat::class, $chats);
-        foreach ($chats as $chat) {
-            foreach ($chat->participants as $user) {
-                $this->assertInstanceOf(User::class, $user);
-            }
-        }
-    }
-
-    public static function chatCreateProvider()
+    public static function chatCreateSuccessProvider()
     {
         return [
             [[1, 2], 'chat1'],
             [[1, 3], 'created_chat_name'],
-            [[2, 3], 'created_chat_name'],
             [[1, 2, 3], 'created_chat_name'],
+            [[4], 'created_chat_name'],
         ];
     }
 
-    #[DataProvider('chatCreateProvider')]
-    public function test_create_chat(array $userIds, string $expectedSlug): void
+    #[DataProvider('chatCreateSuccessProvider')]
+    public function test_create_chat_success(array $userIds, string $expectedSlug): void
     {
         $chatCreateDto = new ChatCreateDTO([
             'slug' => 'created_chat_name',
@@ -79,6 +66,28 @@ class ChatsServiceTest extends TestCase
         $chat = $chatsService->createOrGet($chatCreateDto);
 
         $this->assertEquals($chat->slug, $expectedSlug);
+    }
+
+    public static function chatCreateFailProvider()
+    {
+        return [
+            [[2, 3], 'created_chat_name'],
+        ];
+    }
+
+    #[DataProvider('chatCreateFailProvider')]
+    public function test_create_chat_fail_not_participant(array $userIds, string $expectedSlug): void
+    {
+        $chatCreateDto = new ChatCreateDTO([
+            'slug' => 'created_chat_name',
+            'userIds' => $userIds,
+            'options' => [],
+        ]);
+
+        $this->expectException(\App\Exceptions\AppLogicException::class);
+        $this->expectExceptionMessage('You can not create a chat where you not a participant');
+        $chatsService = resolve(ChatsService::class);
+        $chat = $chatsService->createOrGet($chatCreateDto);
     }
 
     /*

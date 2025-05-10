@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\ChatsSeeder;
 use Database\Seeders\UsersSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class ChatsApiTest extends TestCase
@@ -60,6 +61,20 @@ class ChatsApiTest extends TestCase
                 'id',
             ]
         ]);
+    }
+
+    public function testCreateChatFailNotParticipant()
+    {
+        $userId = 2;
+        $requestBody = [
+            'slug' => 'test_chat',
+            'userIds' => [1, 3],
+            'options' => [],
+        ];
+
+        $response = $this->postJson(route('chats.store', ['user' => $userId]), $requestBody);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     public function testDeleteChatSuccess()
