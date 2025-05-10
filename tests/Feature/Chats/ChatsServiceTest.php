@@ -69,13 +69,13 @@ class ChatsServiceTest extends TestCase
     #[DataProvider('chatCreateProvider')]
     public function test_create_chat(array $userIds, string $expectedSlug): void
     {
-        $chatsService = resolve(ChatsService::class);
         $chatCreateDto = new ChatCreateDTO([
             'slug' => 'created_chat_name',
             'userIds' => $userIds,
             'options' => [],
         ]);
 
+        $chatsService = resolve(ChatsService::class);
         $chat = $chatsService->createOrGet($chatCreateDto);
 
         $this->assertEquals($chat->slug, $expectedSlug);

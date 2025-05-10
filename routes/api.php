@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 
     // все роуты api версии v1
-    Route::prefix('/v1')->group(function () {
+    Route::group(['prefix' => '/v1', 'middleware' => ['throttle:10rps_ip']], function () {
 
-        // Маршруты, не требующие аутентификации (без middleware)
+        // Маршруты, не требующие аутентификации
         Route::get('/ping', function () {
             return response()->json(['message' => 'pong']);
         });
@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
             Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('auth.logout');
         });
 
+        // Маршруты, требующие аутентификации
         Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
-            Route::get('/', [App\Http\Controllers\UsersController::class, 'list'])->name('users.list');
+            Route::get('/', [App\Http\Controllers\UsersController::class, 'index'])->name('users.index');
             Route::group(['prefix' => '{user}/chats', 'middleware' => ['permissions']], function () {
                 Route::get('/', [App\Http\Controllers\ChatsController::class, 'index'])->name('chats.index');
                 Route::post('/', [App\Http\Controllers\ChatsController::class, 'createOrGet'])->name('chats.store');
@@ -30,11 +31,4 @@ use Illuminate\Support\Facades\Route;
             });
         });
 
-
-        // Маршруты, требующие аутентификации
-        Route::middleware('auth:sanctum')->group(function () {
-
-            //
-
-        });
     });
