@@ -54,6 +54,7 @@ class AuthController extends Controller
             ->setStatusCode(Response::HTTP_OK);
     }
 
+    #[Group('Auth')]
     public function logout()
     {
         $authService = app()->make(AuthService::class);
