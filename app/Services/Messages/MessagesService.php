@@ -5,6 +5,7 @@ namespace App\Services\Messages;
 use App\Exceptions\AppLogicException;
 use App\Models\Chat;
 use App\Services\Messages\DTO\MessageCreateDto;
+use App\Services\Messages\DTO\MessageListDto;
 
 class MessagesService
 {
@@ -27,19 +28,26 @@ class MessagesService
         return $message;
     }
 
-    public function list($userId, $chatId)
+    public function list(MessageListDto $dto)
     {
-        $chat = Chat::find($chatId);
+        $chat = Chat::find($dto->chat);
 
         if (!$chat) {
             throw new AppLogicException('Chat not found');
         }
 
-        if (!$chat->participants()->where('user_id', $userId)->exists()) {
+        if (!$chat->participants()->where('user_id', $dto->user)->exists()) {
             throw new AppLogicException('User is not a participant of the chat');
         }
 
-        $messages = $chat->messages()->get();
+        $messages = $chat->messages()
+            ->where('text', 'like', '%' . $dto->searchText . '%')
+            ->paginate(
+                perPage: $dto->perPage,
+                columns: $dto->columns,
+                pageName: 'page',
+                page: $dto->pageNumber,
+            );
 
         return $messages;
     }

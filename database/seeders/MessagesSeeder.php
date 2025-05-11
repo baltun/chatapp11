@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Chat;
+use App\Models\Message;
 use Illuminate\Database\Seeder;
 
 class MessagesSeeder extends Seeder
@@ -37,6 +38,8 @@ class MessagesSeeder extends Seeder
         $message2_2 = $chat2->messages()->create([
             'author_id' => 4,
             'text' => self::MESSAGE_TEXT_4,
+        ]);
+        $message2[] = Message::factory(30)->create([
         ]);
     }
 }

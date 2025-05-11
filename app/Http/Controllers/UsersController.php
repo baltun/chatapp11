@@ -22,9 +22,7 @@ class UsersController extends Controller
 //    #[ResponseFromApiResource(JsonResponse::class, Chat::class, status: StatusCode::HTTP_OK)]
     public function index(UsersListRequest $request)
     {
-        $usersListDto = new UsersListDTO(
-            $request->validated()
-        );
+        $usersListDto = UsersListDTO::fromRequest($request);
 
         $users = $this->usersService->list($usersListDto);
 

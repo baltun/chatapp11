@@ -6,8 +6,10 @@ use App\Models\Chat;
 use App\Models\User;
 use App\Services\Messages\DTO\MessageCreateDto;
 use App\Http\Requests\MessageCreateRequest;
+use App\Services\Messages\DTO\MessageListDto;
 use App\Services\Messages\MessagesService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Knuckles\Scribe\Attributes\Authenticated;
@@ -45,7 +47,21 @@ class MessagesController extends Controller
     #[UrlParam('user', type: 'string', description: "Must be a user ID")]
     #[UrlParam('chat', type: 'int', description: "Must be a chat ID")]
 //    #[ResponseFromApiResource(JsonResponse::class, Message::class, status: StatusCode::HTTP_NO_CONTENT)]
-    public function list(User $user, Chat $chat)
+    public function list(Request $request)
+    {
+        $dto = MessageListDto::fromRequest($request);
+        $messages = $this->messagesService->list($dto);
+
+        return (new ResourceCollection($messages))->response()
+            ->setStatusCode(StatusCode::HTTP_OK);
+    }
+
+    #[Authenticated]
+    #[Group('Messages')]
+    #[UrlParam('user', type: 'string', description: "Must be a user ID")]
+    #[UrlParam('chat', type: 'int', description: "Must be a chat ID")]
+//    #[ResponseFromApiResource(JsonResponse::class, Message::class, status: StatusCode::HTTP_NO_CONTENT)]
+    public function show(User $user, Chat $chat)
     {
         $messages = $this->messagesService->list($user->id, $chat->id);
 

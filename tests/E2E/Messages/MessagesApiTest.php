@@ -82,4 +82,33 @@ class MessagesApiTest extends TestCase
 
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
+
+    public function test_list_messages()
+    {
+        $requestBody = [
+            'pageNumber' => 1,
+            'perPage' => 20,
+            'searchText' => '',
+        ];
+        $response = $this->getJson(
+                                    route('messages.index', [
+                                        'user' => 1,
+                                        'chat' => 1,
+                                    ]) . '?' . http_build_query($requestBody)
+        );
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'text',
+                    'author_id',
+                    'created_at',
+                ],
+            ],
+        ]);
+        $response->assertJsonCount(20, 'data');
+
+    }
+
 }

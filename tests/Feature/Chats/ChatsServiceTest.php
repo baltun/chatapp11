@@ -47,9 +47,9 @@ class ChatsServiceTest extends TestCase
     {
         return [
             [[1, 2], 'chat1'],
-            [[1, 3], 'created_chat_name'],
+            [[1, 3], 'personal'],
             [[1, 2, 3], 'created_chat_name'],
-            [[4], 'created_chat_name'],
+            [[4], 'personal'],
         ];
     }
 

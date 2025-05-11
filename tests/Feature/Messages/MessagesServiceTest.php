@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Messages;
 
+use App\Exceptions\AppLogicException;
 use App\Models\Chat;
 use App\Models\User;
 use App\Services\Messages\DTO\MessageCreateDto;
 use App\Models\Message;
+use App\Services\Messages\DTO\MessageListDto;
 use App\Services\Messages\MessagesService;
 use Database\Seeders\ChatsSeeder;
 use Database\Seeders\MessagesSeeder;
@@ -57,27 +59,37 @@ class MessagesServiceTest extends TestCase
     {
         $messagesService = $this->app->make(MessagesService::class);
 
-        $chat = Chat::find(1);
-        $currentUser = auth()->user();
 
-        $messages = $messagesService->list($currentUser->id, $chat->id);
+        $messageListDto = new MessageListDto([
+            'pageNumber' => 1,
+            'perPage' => 20,
+            'chat' => 1,
+            'user' => 1,
+        ]);
+
+        $messages = $messagesService->list($messageListDto);
+
         $this->assertNotEmpty($messages);
         $this->assertInstanceOf(Message::class, $messages[0]);
         $this->assertEquals($messages[0]->text, MessagesSeeder::MESSAGE_TEXT_1);
         $this->assertEquals($messages[0]->author_id, 1);
-        $this->assertEquals($messages[0]->chat_id, 1);
+        $this->assertInstanceOf(User::class, $messages[0]->author);
+        $this->assertCount(20, $messages);
     }
-
     public function test_messages_list_fail_not_participant()
     {
         $messagesService = $this->app->make(MessagesService::class);
 
-        $chat = Chat::find(2);
-        $currentUser = auth()->user();
+        $messageListDto = new MessageListDto([
+            'pageNumber' => 1,
+            'perPage' => 20,
+            'chat' => 2,
+            'user' => 1,
+        ]);
 
-        $this->expectException(\App\Exceptions\AppLogicException::class);
+        $this->expectException(AppLogicException::class);
         $this->expectExceptionMessage('User is not a participant of the chat');
-        $messagesService->list($currentUser->id, $chat->id);
+        $messagesService->list($messageListDto);
     }
 
     public function tearDown(): void

@@ -14,31 +14,34 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ChatsService
 {
+    const SLUG_FOR_TWO_USERS_CHAT = 'personal';
 
     public function createOrGet(ChatCreateDTO $chatCreateDTO)
     {
-        $userIds = $chatCreateDTO->userIds;
         $slug = $chatCreateDTO->slug;
 
-        if (count($userIds) == 0) {
+        if (count($chatCreateDTO->userIds) == 0) {
             throw new AppLogicException('Chat must have at least 2 participants', Response::HTTP_BAD_REQUEST);
         }
 
-        if (empty($slug)) {
-            throw new AppLogicException('Slug is required', Response::HTTP_BAD_REQUEST);
-        }
-
-        if (count($userIds) == 1) {
-            if ($userIds[0] == Auth::user()->id) {
+        if (count($chatCreateDTO->userIds) == 1) {
+            if ($chatCreateDTO->userIds[0] == Auth::user()->id) {
                 throw new AppLogicException("You can not create a chat without participants", Response::HTTP_BAD_REQUEST);
             }
             $chatCreateDTO->userIds[] = Auth::user()->id;
         }
 
+        if (count($chatCreateDTO->userIds) == 2) {
+            $chatCreateDTO->slug = self::SLUG_FOR_TWO_USERS_CHAT;
+        }
+        if (count($chatCreateDTO->userIds) > 2 && empty($chatCreateDTO->slug)) {
+            throw new AppLogicException('Slug is required', Response::HTTP_BAD_REQUEST);
+        }
+
         if (!Auth::user() || !in_array(Auth::user()->id, $chatCreateDTO->userIds)) {
             throw new AppLogicException("You can not create a chat where you not a participant", Response::HTTP_BAD_REQUEST);
         }
-//dd($chatCreateDTO->userIds);
+
         $existingChat = $this->isChatExists($chatCreateDTO->userIds);
         if ($existingChat) {
             return $existingChat;
